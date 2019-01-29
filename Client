@@ -1,0 +1,24 @@
+import socket
+from threading import Thread
+
+sock = socket.socket()
+sock.connect(('localhost', 9191))
+def RecvMsg(sock):
+    while 1:
+        data = sock.recv(1024).decode('utf-8')
+        print(data)
+        if not data:
+            break
+def SendMsg(sock):
+    while 1:
+        sock.send(input().encode())
+def main(sock):
+    data = ''
+    while data != 'Completed':
+        data = sock.recv(1024).decode('utf-8')
+        print(data)
+        if (data != 'User is already in chat') and (data != 'Incorrect login or password'):
+            sock.send(input().encode())
+    Thread(target=RecvMsg,args = (sock,)).start()
+    SendMsg(sock)
+main(sock)   
