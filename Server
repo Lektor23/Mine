@@ -1,0 +1,40 @@
+import socket
+from threading import Thread
+sock1 = socket.socket()
+sock1.bind(('',9191))
+sock1.listen(4)
+def LogIn(conn):
+    conn.send('Enter login'.encode())
+    Login = conn.recv(1024).decode('utf-8')
+    print(Login)
+    conn.send('Enter password'.encode())
+    Password = conn.recv(1024).decode('utf-8')
+    print(Password)
+    for i,j in DictUsers.items():
+        if (i,j == Login, Password) and Login in DictClients.keys():
+            conn.send('User is already in chat'.encode())
+            return LogIn(conn)
+        elif (i == Login) or (j == Password):
+            conn.send('Completed'.encode())
+            return DictClients.update({Login: conn})
+    conn.send('Incorrect login or password'.encode())
+    return LogIn(conn)
+def writing(conn):
+    while 1:
+        data = conn.recv(1024).decode('utf-8')
+        print(data)
+        if not data:
+            break
+        Login = [i for i,v in DictClients.items() if v == conn][0]
+        for i in DictClients.values():
+            if conn!=i:
+                i.send((Login + ': ' + data).encode())
+    conn.close()
+DictClients = {}
+DictUsers = {'User1': '1234','User2': '2345','User3':'3456','User4':'4567'}
+for i in DictUsers:
+    conn, addr = sock1.accept()
+    LogIn(conn)
+    print("[-] Connected to " + addr[0] + ":" + str(addr[1]))
+    i = Thread(target=writing, args = (conn,))
+    i.start()
