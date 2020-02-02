@@ -1,0 +1,100 @@
+%%time
+import numpy as np
+import time
+while True:
+    Metod = input("Введите file, если хотите извлекать поле из файла. Введите random, если хотите получить случайное поле с заданными m и n")
+    if (Metod == "file"):
+        # ЗДЕСЬ УКАЖИТЕ ПУТЬ К ФАЙЛУ
+        Arr = np.loadtxt("test.txt", dtype=np.int)
+        m = len(Arr)
+        n = len(Arr[0])
+        break
+    elif (Metod == "random"):
+        m = int(input("Введите m "))
+        n = int(input("Введите n "))
+        Arr = np.random.randint(0,2,(m,n))
+        break
+    else:
+        print("Введите либо file либо random!")
+def Main(Arr):
+    Arr_copy = Arr.copy()
+    List_Neib = []
+    s = 0
+    st = 0
+    for i in Arr:
+        for j in i:
+            if (s==0):
+                if (st==0):
+                    List_Neib.append(Arr[s][st+1])
+                    List_Neib.append(Arr[s+1][st])
+                    List_Neib.append(Arr[s+1][st+1])
+                elif (st==n-1):
+                    List_Neib.append(Arr[s][st-1])
+                    List_Neib.append(Arr[s+1][st-1])
+                    List_Neib.append(Arr[s+1][st])
+                else:
+                    List_Neib.append(Arr[s][st-1])
+                    List_Neib.append(Arr[s+1][st-1])
+                    List_Neib.append(Arr[s+1][st])
+                    List_Neib.append(Arr[s+1][st+1])
+                    List_Neib.append(Arr[s][st+1])
+            elif (s==m-1):
+                if (st==n-1):
+                    List_Neib.append(Arr[s][st-1])
+                    List_Neib.append(Arr[s-1][st-1])
+                    List_Neib.append(Arr[s-1][st])
+                elif (st==0):
+                    List_Neib.append(Arr[s-1][st])
+                    List_Neib.append(Arr[s-1][st+1])
+                    List_Neib.append(Arr[s][st+1])
+                else:
+                    List_Neib.append(Arr[s][st-1])
+                    List_Neib.append(Arr[s-1][st-1])
+                    List_Neib.append(Arr[s-1][st])
+                    List_Neib.append(Arr[s-1][st+1])
+                    List_Neib.append(Arr[s][st+1])
+            elif (st==n-1):
+                List_Neib.append(Arr[s-1][st])
+                List_Neib.append(Arr[s-1][st-1])
+                List_Neib.append(Arr[s][st-1])
+                List_Neib.append(Arr[s+1][st-1])
+                List_Neib.append(Arr[s+1][st])
+            elif (st==0):
+                List_Neib.append(Arr[s-1][st])
+                List_Neib.append(Arr[s-1][st+1])
+                List_Neib.append(Arr[s][st+1])
+                List_Neib.append(Arr[s+1][st])
+                List_Neib.append(Arr[s+1][st+1])
+            else:
+                List_Neib.append(Arr[s-1][st-1])
+                List_Neib.append(Arr[s-1][st])
+                List_Neib.append(Arr[s-1][st+1])
+                List_Neib.append(Arr[s][st-1])
+                List_Neib.append(Arr[s][st+1])
+                List_Neib.append(Arr[s+1][st-1])
+                List_Neib.append(Arr[s+1][st])
+                List_Neib.append(Arr[s+1][st+1])
+            if (j==1):
+                if (List_Neib.count(1) < 2):
+                    Arr_copy[s][st]=0
+                elif (List_Neib.count(1) in [2,3]):
+                    pass
+                elif (List_Neib.count(1)>3):
+                    Arr_copy[s][st]=0
+            else:
+                if (List_Neib.count(1) == 3):
+                    Arr_copy[s][st] = 1
+            List_Neib.clear()
+            st+=1
+        s+=1
+        st=0
+    return Arr_copy
+while True:
+    Arr_now = Main(Arr)
+    if (np.array_equal(Arr, Arr_now)):
+        print("Больше изменений не будет, но вы держитесь")
+        break
+    Arr = Arr_now
+    print(Arr)
+    print(" ")
+    time.sleep(1)
